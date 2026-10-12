@@ -3,12 +3,7 @@
 const M=window.Dayline, $=id=>document.getElementById(id), STORE="dayline.state.v1", PREFS="dayline.prefs.v1";
 let data=M.demo(), isDemo=true, viewMonday=M.monday(M.now().date), paused=false, lastMinute="", lastProperty="", wallpaperHost=false;
 let prefs={theme:"light",opacity:.88,room:true,clock:true}, storageError="";
-function inputCapableUrlMode(){
-  // Wallpaper Engine only exposes keyboard focus for wallpapers opened from a URL.
-  // Keep imported/file projects in the defensive no-focus mode that avoids the CEF crash.
-  const protocol=window.location && window.location.protocol ? String(window.location.protocol).toLowerCase() : "file:";
-  return protocol==="http:" || protocol==="https:";
-}
+let hostDraft=null;
 try {
   const stored=JSON.parse(localStorage.getItem(STORE) || "null");
   if(stored){data=M.normalize(stored.data);isDemo=stored.demo===true;lastProperty=stored.property || "";}
@@ -86,7 +81,7 @@ function open(id){
 }
 function close(id){
   const panel=$(id); panel.hidden=true; panel.open=false;
-  const anyOpen=["settings-dialog","event-dialog","detail-dialog"].some(name=>!$(name).hidden);
+  const anyOpen=["settings-dialog","event-dialog","host-event-dialog","detail-dialog"].some(name=>!$(name).hidden);
   if(!anyOpen && document.body && document.body.classList)document.body.classList.remove("modal-open");
 }
 function importText(value,property){
@@ -101,12 +96,47 @@ function propertyToken(value){
   for(let i=0;i<value.length;i++){a=Math.imul(a^value.charCodeAt(i),16777619);b=Math.imul(b^value.charCodeAt(i),16777619);}
   return value.length+":"+(a>>>0).toString(16)+":"+(b>>>0).toString(16);
 }
+const hostRepeatLabels={none:"仅一次",daily:"每天",weekly:"每周",weekdays:"工作日",custom:"自定义星期",holiday:"每天并跳过排除日"};
+function renderHostDraft(){
+  if(!hostDraft)return;
+  $("host-name-value").textContent=hostDraft.name;
+  $("host-date-value").textContent=hostDraft.date;
+  $("host-start-value").textContent=M.clockText(hostDraft.start);
+  $("host-end-value").textContent=M.clockText(hostDraft.end);
+  $("host-repeat-value").textContent=hostRepeatLabels[hostDraft.repeat] || "仅一次";
+  document.querySelectorAll("[data-host-name]").forEach(el=>el.classList.toggle("is-selected",el.dataset.hostName===hostDraft.name));
+  document.querySelectorAll("[data-host-repeat]").forEach(el=>el.classList.toggle("is-selected",el.dataset.hostRepeat===hostDraft.repeat));
+}
+function openHostEvent(id){
+  const event=id?data.events.find(item=>item.id===id):null, range=event?M.eventRange(event,data.periods):null;
+  const current=M.now(), rounded=Math.min(1380,Math.ceil(M.clock(current.clock)/15)*15);
+  hostDraft={
+    id:id || "",
+    name:event?event.name:"学习",
+    date:event && event.date?event.date:current.date,
+    start:range?range.start:rounded,
+    end:range && !range.point?range.end:Math.min(1439,rounded+60),
+    repeat:event?event.repeat:"none",
+    weekdays:event && Array.isArray(event.weekdays)?event.weekdays.slice():[]
+  };
+  if(hostDraft.end<=hostDraft.start){hostDraft.start=1320;hostDraft.end=1380;}
+  $("host-event-title").textContent=event?"编辑事项":"添加事项";
+  $("host-event-delete").hidden=!event;
+  error("host-event-error","");renderHostDraft();open("host-event-dialog");
+}
+function saveHostEvent(){
+  try{
+    if(!hostDraft)throw new Error("事项编辑状态已失效，请重新打开");
+    const id=hostDraft.id || "e"+Date.now().toString(36)+Math.random().toString(36).slice(2,7), old=data.events.find(item=>item.id===id);
+    const event={...old,id,name:hostDraft.name,date:hostDraft.date,time:M.clockText(hostDraft.start),endTime:M.clockText(hostDraft.end),
+      unit:null,endUnit:null,unitAnchor:"start",repeat:hostDraft.repeat,enabled:old?old.enabled:true,weekdays:hostDraft.weekdays};
+    const next=M.normalize({...data,events:data.events.filter(item=>item.id!==id).concat(event)});
+    persist(next,isDemo);render();close("host-event-dialog");
+  }catch(err){error("host-event-error",err.message);}
+}
 function openEvent(id){
   if(wallpaperHost){
-    $("detail-title").textContent=id?"编辑事项":"添加事项";
-    $("detail-content").innerHTML="<h3>请在日程表应用中编辑</h3><p>Wallpaper Engine 的网页宿主不稳定支持键盘输入。请在原日程表应用中添加或修改事项，导出全部数据后，再通过 Wallpaper Engine 右侧的「日程 JSON」属性更新。</p><p>事项的日期、开始时间和结束时间会继续显示在本壁纸中。</p>";
-    open("detail-dialog");
-    return;
+    openHostEvent(id);return;
   }
   const event=id?data.events.find(e=>e.id===id):null, range=event?M.eventRange(event,data.periods):null;
   $("event-id").value=id || "";$("event-name").value=event?event.name:"";
@@ -132,7 +162,7 @@ $("settings-open").onclick=()=>{
   open("detail-dialog");
 };
 $("add-open").onclick=()=>openEvent();
-["settings","event","detail"].forEach(name=>{$(name+"-close").onclick=()=>close(name+"-dialog");});
+["settings","event","host-event","detail"].forEach(name=>{$(name+"-close").onclick=()=>close(name+"-dialog");});
 $("days").onclick=e=>{
   const card=e.target.closest("[data-item]");if(!card)return;
   if(card.dataset.kind==="event")openEvent(card.dataset.item);
@@ -168,16 +198,34 @@ $("event-form").onsubmit=e=>{
   }catch(err){error("event-error",err.message);}
 };
 $("event-delete").onclick=()=>{try{persist({...data,events:data.events.filter(e=>e.id!==$("event-id").value)});render();close("event-dialog");}catch(e){error("event-error",e.message);}};
+$("host-event-dialog").onclick=e=>{
+  const button=e.target && e.target.closest?e.target.closest("button"):e.target;
+  if(!button || !hostDraft)return;
+  if(button.dataset.hostName){hostDraft.name=button.dataset.hostName;renderHostDraft();return;}
+  if(button.dataset.hostDate){hostDraft.date=button.dataset.hostDate==="today"?M.now().date:M.addDays(hostDraft.date,Number(button.dataset.hostDate));renderHostDraft();return;}
+  if(button.dataset.hostRepeat){hostDraft.repeat=button.dataset.hostRepeat;hostDraft.weekdays=[];renderHostDraft();return;}
+  if(button.dataset.hostTime){
+    const field=button.dataset.hostTime, step=Number(button.dataset.hostStep);
+    hostDraft[field]=Math.max(0,Math.min(1439,hostDraft[field]+step));
+    if(hostDraft.end<=hostDraft.start){if(field==="start")hostDraft.end=Math.min(1439,hostDraft.start+15);else hostDraft.start=Math.max(0,hostDraft.end-15);}
+    renderHostDraft();
+  }
+};
+$("host-event-save").onclick=saveHostEvent;
+$("host-event-delete").onclick=()=>{try{if(hostDraft && hostDraft.id){persist({...data,events:data.events.filter(item=>item.id!==hostDraft.id)},isDemo);render();}close("host-event-dialog");}catch(e){error("host-event-error",e.message);}};
 window.addEventListener("keydown",event=>{
   if(event.key!=="Escape")return;
-  for(const id of ["detail-dialog","event-dialog","settings-dialog"]){if(!$(id).hidden){close(id);break;}}
+  for(const id of ["detail-dialog","host-event-dialog","event-dialog","settings-dialog"]){if(!$(id).hidden){close(id);break;}}
 });
 // Register at global scope as required by Wallpaper Engine; updates are partial.
 window.wallpaperPropertyListener={
   applyUserProperties(properties){
-    wallpaperHost=!inputCapableUrlMode();
-    $("add-open").textContent=wallpaperHost?"添加事项说明":"＋ 添加事项";
-    $("add-open").title=wallpaperHost?"在日程表应用中添加事项后重新导入":"添加有开始和结束时间的事项";
+    // The user's Wallpaper Engine build crashes its CEF renderer whenever an input
+    // receives focus, including URL wallpapers. Use the button-only editor in every
+    // Wallpaper Engine host; ordinary browsers keep the full keyboard form.
+    wallpaperHost=true;
+    $("add-open").textContent="＋ 添加事项";
+    $("add-open").title="使用纯鼠标编辑器添加有开始和结束时间的事项";
     if(properties.theme)prefs.theme=properties.theme.value==="dark"?"dark":"light";
     if(properties.panelopacity)prefs.opacity=Math.max(.3,Math.min(1,Number(properties.panelopacity.value)/100 || .88));
     if(properties.showroom)prefs.room=Boolean(properties.showroom.value);

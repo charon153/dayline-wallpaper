@@ -3,13 +3,14 @@
 这是一个独立的 Web 壁纸项目。入口是 index.html，所有运行资源都在本目录。
 默认仅含演示课程与示例事项；没有任何个人登录凭据或真实课表。
 
-推荐：GitHub Pages URL 壁纸（支持键盘编辑）
+推荐：GitHub Pages URL 壁纸（Wallpaper Engine 内使用纯鼠标编辑）
 在线地址：https://charon153.github.io/dayline-wallpaper/
 1. 在浏览器打开上述地址，确认日程壁纸可以显示。
 2. 在 Wallpaper Engine 左下角选择「从 URL 打开」，粘贴上述 Pages 地址。
 3. 按 Wallpaper Engine 的提示设置「隐藏桌面图标」快捷键。
-4. 需要输入时先用该快捷键隐藏桌面图标，再点击「添加事项」或事项卡片。
-5. URL 模式保留名称、日期、开始时间、结束时间和重复方式的完整编辑表单。
+4. 需要编辑时先用该快捷键隐藏桌面图标，再点击「添加事项」或事项卡片。
+5. Wallpaper Engine 会显示不含输入框的纯鼠标编辑器，可选择常用名称并用按钮调整
+   日期、开始时间、结束时间和重复方式，避免部分 CEF 版本的键盘焦点崩溃。
 
 日程数据只写入当前电脑中该网址对应的 localStorage，不会随仓库或 GitHub Pages
 上传。清理浏览器/Wallpaper Engine 网站数据或更换 Pages 地址可能丢失本地日程，
@@ -32,9 +33,8 @@
 4. 点「导出当前 JSON」，复制文本框中的单行 JSON。
 5. 回到 Wallpaper Engine，在右侧「日程 JSON」属性粘贴该内容。
    本项目会读取你的数据并在本机保存；浏览器与 Wallpaper Engine 各自保存一份。
-   直接导入文件的 Wallpaper Engine CEF 宿主不稳定支持网页键盘焦点；这种模式中的
-   「添加事项说明」会提示回到原日程表应用编辑。通过「从 URL 打开」加载 GitHub
-   Pages 时，可在隐藏桌面图标后直接使用壁纸内的完整编辑表单。
+   Wallpaper Engine CEF 宿主不稳定支持网页键盘焦点；无论本地文件还是 URL 模式，
+   都会使用纯鼠标编辑器。任意事项名称和批量修改仍可在普通浏览器完成，再导出 JSON。
 
 课程按导入的实际节次时间和周次显示。旧无结束时间的事项仍作为时间点；
 新事项可填写同一天的开始和结束时间。支持每天、每周、工作日、自定义星期，
@@ -61,9 +61,9 @@ webwallpaper64 独立播放窗口中运行交互回归，覆盖周导航、设�
 新建事项、课程详情和已有事项编辑，测试期间窗口保持响应且未新增崩溃日志。
 为兼容 Wallpaper Engine 内置 Chromium，弹层采用普通 HTML/CSS 覆盖层，不调用
 原生 dialog 顶层接口、原生日期/时间选择器或背景模糊合成。直接导入文件的 Wallpaper
-Engine 宿主中，添加、编辑和设置入口只显示无输入框说明，避免 CEF 键盘焦点处理器
-崩溃；HTTP/HTTPS URL 模式保留完整编辑。URL 协议分流和表单输入已在 Chromium 验证，
-发布后的 GitHub Pages 地址仍需在 Wallpaper Engine 中做一次实际键盘验收。暂停恢复、
+Engine 宿主中的添加和编辑入口使用只含按钮的纯鼠标编辑器，避免 CEF 键盘焦点处理器
+崩溃；普通 Chromium 浏览器继续保留完整键盘表单。纯鼠标编辑器已通过离线宿主回归，
+发布后的 GitHub Pages 地址仍需在 Wallpaper Engine 中做一次实际点击验收。暂停恢复、
 配置跨重启持久化和实际内存/GPU占用仍需单独验收。
 
 官方说明

@@ -86,7 +86,7 @@
         <p id="import-error" class="form-error" role="alert" hidden></p>
         <div class="form-actions"><button id="import-apply" class="button button-primary" type="button">导入日程</button><button id="export-data" class="button button-outline" type="button">导出当前 JSON</button></div>
         <p id="export-hint" class="field-hint"></p>
-        <p class="field-hint">通过 Wallpaper Engine「从 URL 打开」加载时，先隐藏桌面图标即可直接键盘编辑。直接导入本地文件时，请在普通浏览器编辑并把导出的单行 JSON 粘贴到 Wallpaper Engine 属性。</p>
+        <p class="field-hint">普通浏览器支持键盘编辑。Wallpaper Engine 中使用不聚焦输入框的纯鼠标编辑器，避免部分 CEF 版本崩溃；复杂名称仍可在浏览器编辑后导出 JSON。</p>
         <p class="field-hint">导入内容只保存在当前设备的网站存储中，页面不会上传日程；个人数据仅在你主动导入后显示。</p>
       </section>
 
@@ -122,6 +122,40 @@
       <p id="event-error" class="form-error" role="alert" hidden></p>
       <div class="form-actions event-actions"><button class="button button-primary" type="submit">保存事项</button><button id="event-delete" class="button button-danger" type="button" hidden>删除事项</button></div>
     </form>
+  </section>
+
+  <section id="host-event-dialog" class="dialog host-event-dialog" role="dialog" aria-modal="true" aria-labelledby="host-event-title" hidden>
+    <header class="dialog-header"><div><p class="eyebrow">MOUSE-SAFE EDITOR</p><h2 id="host-event-title">事项编辑</h2></div><button id="host-event-close" type="button" class="button button-icon" aria-label="关闭事项编辑">×</button></header>
+    <div class="dialog-body host-event-body">
+      <p class="host-editor-note">Wallpaper Engine 键盘焦点兼容模式 · 全程使用按钮，不会打开输入框。</p>
+      <section class="host-control-section" aria-labelledby="host-name-label">
+        <div class="host-control-heading"><span id="host-name-label">事项名称</span><strong id="host-name-value">学习</strong></div>
+        <div id="host-name-presets" class="choice-grid" aria-label="选择事项名称">
+          <button type="button" data-host-name="学习">学习</button><button type="button" data-host-name="作业">作业</button><button type="button" data-host-name="复习">复习</button><button type="button" data-host-name="阅读">阅读</button>
+          <button type="button" data-host-name="会议">会议</button><button type="button" data-host-name="运动">运动</button><button type="button" data-host-name="休息">休息</button><button type="button" data-host-name="个人安排">个人安排</button>
+        </div>
+      </section>
+      <section class="host-control-section">
+        <div class="host-control-heading"><span>日期</span><strong id="host-date-value">—</strong></div>
+        <div class="step-row" aria-label="调整日期"><button type="button" data-host-date="-7">−7 天</button><button type="button" data-host-date="-1">−1 天</button><button type="button" data-host-date="today">今天</button><button type="button" data-host-date="1">＋1 天</button><button type="button" data-host-date="7">＋7 天</button></div>
+      </section>
+      <div class="host-time-grid">
+        <section class="host-control-section">
+          <div class="host-control-heading"><span>开始时间</span><strong id="host-start-value">—</strong></div>
+          <div class="step-row compact" aria-label="调整开始时间"><button type="button" data-host-time="start" data-host-step="-60">−60</button><button type="button" data-host-time="start" data-host-step="-15">−15</button><button type="button" data-host-time="start" data-host-step="15">＋15</button><button type="button" data-host-time="start" data-host-step="60">＋60</button></div>
+        </section>
+        <section class="host-control-section">
+          <div class="host-control-heading"><span>结束时间</span><strong id="host-end-value">—</strong></div>
+          <div class="step-row compact" aria-label="调整结束时间"><button type="button" data-host-time="end" data-host-step="-60">−60</button><button type="button" data-host-time="end" data-host-step="-15">−15</button><button type="button" data-host-time="end" data-host-step="15">＋15</button><button type="button" data-host-time="end" data-host-step="60">＋60</button></div>
+        </section>
+      </div>
+      <section class="host-control-section">
+        <div class="host-control-heading"><span>重复方式</span><strong id="host-repeat-value">仅一次</strong></div>
+        <div id="host-repeat-choices" class="choice-grid repeat-grid"><button type="button" data-host-repeat="none">仅一次</button><button type="button" data-host-repeat="daily">每天</button><button type="button" data-host-repeat="weekly">每周</button><button type="button" data-host-repeat="weekdays">工作日</button></div>
+      </section>
+      <p id="host-event-error" class="form-error" role="alert" hidden></p>
+      <div class="form-actions event-actions"><button id="host-event-save" class="button button-primary" type="button">保存事项</button><button id="host-event-delete" class="button button-danger" type="button" hidden>删除事项</button></div>
+    </div>
   </section>
 
   <section id="detail-dialog" class="dialog detail-dialog" role="dialog" aria-modal="true" aria-labelledby="detail-title" hidden>
