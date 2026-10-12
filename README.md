@@ -2,10 +2,12 @@
 
 一款适合通过 Wallpaper Engine「从 URL 打开」使用的静态网页日程壁纸。它显示七天课表、带开始和结束时间的事项、北京时间，以及当前和下一项安排。
 
+在线壁纸地址：<https://charon153.github.io/dayline-wallpaper/>
+
 ## 在 Wallpaper Engine 中使用
 
-1. 打开本仓库的 GitHub Pages 地址。
-2. 在 Wallpaper Engine 左下角选择「从 URL 打开」，粘贴该地址。
+1. 打开 <https://charon153.github.io/dayline-wallpaper/> 检查页面。
+2. 在 Wallpaper Engine 左下角选择「从 URL 打开」，粘贴这个地址。
 3. 根据 Wallpaper Engine 的提示设置隐藏桌面图标快捷键。
 4. 需要输入事项时，先隐藏桌面图标，再点击壁纸中的「添加事项」。
 

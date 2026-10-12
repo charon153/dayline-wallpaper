@@ -4,8 +4,9 @@
 默认仅含演示课程与示例事项；没有任何个人登录凭据或真实课表。
 
 推荐：GitHub Pages URL 壁纸（支持键盘编辑）
-1. 将本目录作为独立仓库上传到 GitHub，并启用随附的 GitHub Pages 工作流。
-2. 在 Wallpaper Engine 左下角选择「从 URL 打开」，粘贴 Pages 地址。
+在线地址：https://charon153.github.io/dayline-wallpaper/
+1. 在浏览器打开上述地址，确认日程壁纸可以显示。
+2. 在 Wallpaper Engine 左下角选择「从 URL 打开」，粘贴上述 Pages 地址。
 3. 按 Wallpaper Engine 的提示设置「隐藏桌面图标」快捷键。
 4. 需要输入时先用该快捷键隐藏桌面图标，再点击「添加事项」或事项卡片。
 5. URL 模式保留名称、日期、开始时间、结束时间和重复方式的完整编辑表单。
