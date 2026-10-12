@@ -1,0 +1,133 @@
+<!doctype html>
+<html lang="zh-CN" data-theme="light">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>日序 / Dayline</title>
+  <link rel="stylesheet" href="wallpaper.css">
+  <script src="model.js" defer></script>
+  <script src="wallpaper.js" defer></script>
+</head>
+<body>
+  <div class="ambient ambient-blue" aria-hidden="true"></div>
+  <div class="ambient ambient-warm" aria-hidden="true"></div>
+  <main class="wallpaper-shell">
+    <header class="app-header">
+      <div class="brand" aria-label="日序 Dayline">
+        <span class="brand-mark" aria-hidden="true"><i></i><i></i><i></i></span>
+        <div><h1>日序 <span>/ Dayline</span></h1><p>把一天，留给值得做的事。</p></div>
+      </div>
+      <div class="header-actions">
+        <span class="source-badge" id="source-label">演示数据</span>
+        <button class="button button-soft" id="add-open" type="button"><span aria-hidden="true">＋</span> 添加事项</button>
+        <button class="button button-icon" id="settings-open" type="button" aria-label="打开壁纸设置" title="壁纸设置">
+          <svg viewBox="0 0 24 24" fill="none" aria-hidden="true"><path d="M4 7h16M4 17h16M8 4v6M16 14v6" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/><circle cx="8" cy="7" r="2" fill="currentColor"/><circle cx="16" cy="17" r="2" fill="currentColor"/></svg>
+        </button>
+      </div>
+    </header>
+
+    <div class="desktop-layout">
+      <aside class="day-sidebar">
+        <section class="clock-section" aria-label="北京时间">
+          <p class="eyebrow">此时 · 此刻</p>
+          <div id="clock" class="clock" aria-live="off">—:—</div>
+          <p id="date-label" class="date-label">正在读取北京时间</p>
+          <div class="clock-rule" aria-hidden="true"></div>
+        </section>
+
+        <section class="next-section glass-panel" aria-labelledby="next-title">
+          <div class="section-label"><span class="live-dot" aria-hidden="true"></span><h2 id="next-title">接下来的安排</h2></div>
+          <div id="next-item" class="next-item"><p class="quiet">正在读取日程</p></div>
+        </section>
+
+        <div class="sidebar-note">
+          <span class="note-mark" aria-hidden="true">↗</span>
+          <p>课程与事项，共用一条时间线。<br>点击事项编辑，点击课程查看详情。</p>
+        </div>
+      </aside>
+
+      <section class="schedule-panel glass-panel" aria-labelledby="schedule-title">
+        <header class="schedule-toolbar">
+          <div class="schedule-heading"><p class="eyebrow">YOUR WEEK, AT A GLANCE</p><h2 id="schedule-title">一周日程</h2></div>
+          <div class="week-navigation" role="group" aria-label="周次导航">
+            <button id="week-prev" class="button button-icon" type="button" aria-label="上一周" title="上一周">‹</button>
+            <span id="week-label" class="week-label" aria-live="polite">正在载入</span>
+            <button id="week-next" class="button button-icon" type="button" aria-label="下一周" title="下一周">›</button>
+            <button id="week-today" class="button button-today" type="button">本周</button>
+          </div>
+        </header>
+        <div class="schedule-legend" aria-label="日程图例"><span><i class="legend-course"></i>课程</span><span><i class="legend-event"></i>事项</span><span class="legend-hint">高度对应时长 · 重叠安排并列</span></div>
+        <div class="schedule-scroll">
+          <div id="schedule-grid" class="schedule-grid">
+            <div class="axis-cap">时间</div>
+            <div id="day-heads" class="day-heads" aria-label="本周日期"></div>
+            <div id="axis" class="time-axis" aria-hidden="true"></div>
+            <div id="days" class="days" aria-label="课程与事项时间线"></div>
+          </div>
+        </div>
+        <footer class="schedule-footer"><span>日程数据保存在本机</span><span>Wallpaper Engine · 独立网页壁纸</span></footer>
+      </section>
+    </div>
+    <p class="desktop-footnote">本机保存日程 · 在设置中粘贴应用导出的 JSON 即可导入 · 壁纸不提供后台系统提醒</p>
+    <p id="property-status" class="form-error" role="status"></p>
+  </main>
+
+  <section id="settings-dialog" class="dialog settings-dialog" role="dialog" aria-modal="true" aria-labelledby="settings-title" hidden>
+    <header class="dialog-header"><div><p class="eyebrow">MAKE IT YOURS</p><h2 id="settings-title">壁纸设置</h2></div><button id="settings-close" type="button" class="button button-icon" aria-label="关闭设置">×</button></header>
+    <div class="dialog-body settings-body">
+      <section class="settings-section">
+        <h3>导入你的日程</h3>
+        <ol class="instructions">
+          <li>在日程表应用中打开「导入课表 → 数据管理」，点击「导出全部数据」，保存 JSON 文件。</li>
+          <li>用文本编辑器打开该文件，将完整内容复制到下面，点击「导入日程」。课程、事项、学期和节次时间会一起读取。</li>
+          <li>检查学期开始日，然后通过顶部周次导航查看日程。后续应用数据改变时，重新导出并粘贴即可更新壁纸。</li>
+        </ol>
+        <label class="field" for="import-json"><span>日程 JSON</span><textarea id="import-json" rows="6" spellcheck="false" placeholder="粘贴日程表应用导出的完整 JSON"></textarea></label>
+        <p id="import-error" class="form-error" role="alert" hidden></p>
+        <div class="form-actions"><button id="import-apply" class="button button-primary" type="button">导入日程</button><button id="export-data" class="button button-outline" type="button">导出当前 JSON</button></div>
+        <p id="export-hint" class="field-hint"></p>
+        <p class="field-hint">通过 Wallpaper Engine「从 URL 打开」加载时，先隐藏桌面图标即可直接键盘编辑。直接导入本地文件时，请在普通浏览器编辑并把导出的单行 JSON 粘贴到 Wallpaper Engine 属性。</p>
+        <p class="field-hint">导入内容只保存在当前设备的网站存储中，页面不会上传日程；个人数据仅在你主动导入后显示。</p>
+      </section>
+
+      <section class="settings-section">
+        <h3>日期与显示</h3>
+        <div class="form-grid">
+          <label class="field" for="semester-start"><span>学期开始日</span><input id="semester-start" type="text" inputmode="numeric" maxlength="10" placeholder="YYYY-MM-DD" autocomplete="off" spellcheck="false"><small>格式 YYYY-MM-DD，用于计算第几周与课程日期。</small></label>
+          <label class="field" for="theme-select"><span>配色</span><select id="theme-select"><option value="light">晨雾 · 浅色</option><option value="dark">夜航 · 深色</option></select></label>
+        </div>
+        <label class="field range-field" for="panel-opacity"><span>面板不透明度</span><input id="panel-opacity" type="range" min="0.3" max="1" step="0.01" value="0.88"><small>向右提高对比度，向左让背景更通透。</small></label>
+        <div class="toggle-row"><label><input id="show-room" type="checkbox" checked> 显示课程地点</label><label><input id="show-clock" type="checkbox" checked> 显示大时钟</label></div>
+      </section>
+
+      <section class="settings-section usage-section">
+        <h3>关于这个独立壁纸</h3>
+        <p>壁纸中的课程和事项按开始、结束时间显示。点击「添加事项」可录入安排，点击已有事项可修改或删除；课程卡片可以查看详情。</p>
+        <p>壁纸使用你导入的数据，并不会自动连接学校教务系统。导入后可在壁纸内编辑事项，编辑结果不会回写原日程表应用。</p>
+        <p>这是独立网页壁纸，<strong>不提供后台系统提醒</strong>。需要 Windows 通知或提示音时，请运行原日程表应用。</p>
+        <div class="form-actions"><button id="restore-demo" class="button button-outline" type="button">恢复演示数据</button><span class="field-hint">演示标识用于区分示例与个人导入。</span></div>
+      </section>
+    </div>
+  </section>
+
+  <section id="event-dialog" class="dialog event-dialog" role="dialog" aria-modal="true" aria-labelledby="event-title" hidden>
+    <header class="dialog-header"><div><p class="eyebrow">A LITTLE ROOM FOR YOUR PLANS</p><h2 id="event-title">日程事项</h2></div><button id="event-close" type="button" class="button button-icon" aria-label="关闭事项编辑">×</button></header>
+    <form id="event-form" class="dialog-body" novalidate>
+      <input id="event-id" type="hidden">
+      <label class="field" for="event-name"><span>事项名称</span><input id="event-name" type="text" required maxlength="120" placeholder="例如：整理读书笔记" autocomplete="off"></label>
+      <div class="form-grid"><label class="field" for="event-date"><span>日期</span><input id="event-date" type="text" inputmode="numeric" maxlength="10" placeholder="YYYY-MM-DD" autocomplete="off" spellcheck="false"></label><label class="field" for="event-repeat"><span>重复方式</span><select id="event-repeat"><option value="none">仅一次</option><option value="daily">每天</option><option value="weekly">每周同一天</option><option value="weekdays">工作日 · 周一至周五</option><option value="custom">自定义星期</option><option value="holiday">每天，跳过导入的排除日期</option></select></label></div>
+      <div class="form-grid"><label class="field" for="event-start"><span>开始时间</span><input id="event-start" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" autocomplete="off" spellcheck="false"></label><label class="field" for="event-end"><span>结束时间</span><input id="event-end" type="text" inputmode="numeric" maxlength="5" placeholder="HH:MM" autocomplete="off" spellcheck="false"></label></div>
+      <fieldset id="event-weekdays" class="weekday-picker" hidden><legend>重复星期</legend><label><input type="checkbox" name="weekdays" value="1">一</label><label><input type="checkbox" name="weekdays" value="2">二</label><label><input type="checkbox" name="weekdays" value="3">三</label><label><input type="checkbox" name="weekdays" value="4">四</label><label><input type="checkbox" name="weekdays" value="5">五</label><label><input type="checkbox" name="weekdays" value="6">六</label><label><input type="checkbox" name="weekdays" value="7">日</label></fieldset>
+      <p class="field-hint">结束时间须晚于开始时间，且在同一天。每周事项从所选日期开始；每天、工作日和自定义星期按对应规则重复。导入的旧时间点事项可保留空结束时间。</p>
+      <p id="event-error" class="form-error" role="alert" hidden></p>
+      <div class="form-actions event-actions"><button class="button button-primary" type="submit">保存事项</button><button id="event-delete" class="button button-danger" type="button" hidden>删除事项</button></div>
+    </form>
+  </section>
+
+  <section id="detail-dialog" class="dialog detail-dialog" role="dialog" aria-modal="true" aria-labelledby="detail-title" hidden>
+    <header class="dialog-header"><div><p class="eyebrow">ON YOUR SCHEDULE</p><h2 id="detail-title">课程详情</h2></div><button id="detail-close" type="button" class="button button-icon" aria-label="关闭课程详情">×</button></header>
+    <div id="detail-content" class="dialog-body detail-content"></div>
+  </section>
+  <noscript><div class="noscript-note">请启用 JavaScript，以显示时钟、日程和编辑功能。</div></noscript>
+</body>
+</html>

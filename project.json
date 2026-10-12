@@ -1,0 +1,18 @@
+{
+  "title": "日序 / Dayline · 课表与事项",
+  "description": "静态网页日程壁纸。七天课表、事项起止时间、北京时间、当前及下一项安排。GitHub Pages URL 模式可直接键盘编辑，也可导入日程表应用导出的 JSON。默认仅有演示数据，无需账号。独立壁纸不连接教务认证、不自动同步、不提供后台系统通知。",
+  "type": "web",
+  "file": "index.html",
+  "preview": "preview.jpg",
+  "visibility": "private",
+  "tags": ["Abstract"],
+  "general": {
+    "properties": {
+      "theme": {"order": 0, "text": "配色", "type": "combo", "value": "light", "options": [{"label": "晨雾 · 浅色", "value": "light"}, {"label": "夜航 · 深色", "value": "dark"}]},
+      "panelopacity": {"order": 1, "text": "面板不透明度 (%)", "type": "slider", "min": 30, "max": 100, "value": 88},
+      "showclock": {"order": 2, "text": "显示北京时间", "type": "bool", "value": true},
+      "showroom": {"order": 3, "text": "显示课程地点", "type": "bool", "value": true},
+      "schedulejson": {"order": 4, "text": "日程 JSON（粘贴浏览器编辑器导出的单行 JSON，留空保留本机日程）", "type": "textinput", "value": ""}
+    }
+  }
+}
