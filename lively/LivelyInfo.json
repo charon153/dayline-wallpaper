@@ -1,0 +1,20 @@
+{
+  "AppVersion": "2.2.1.5",
+  "Title": "Dayline",
+  "Thumbnail": "preview.jpg",
+  "Preview": "preview.jpg",
+  "Desc": "离线周课表与日程壁纸，支持键盘输入、事项起止时间、本地保存与 JSON 备份。",
+  "Author": "Dayline",
+  "License": "MIT",
+  "Contact": "https://github.com/charon153/dayline-wallpaper",
+  "Type": 1,
+  "FileName": "index.html",
+  "Arguments": "",
+  "IsAbsolutePath": false,
+  "Tags": [
+    "schedule",
+    "productivity",
+    "offline"
+  ],
+  "Version": 1
+}
